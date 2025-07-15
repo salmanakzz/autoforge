@@ -29,7 +29,7 @@ export async function callAIProvider({
 
     // const json = await res.json();
     // return json.choices?.[0]?.message?.content?.trim() || "";
-    return "nice-test";
+    return "nice-commit-message"; // Mock response for testing
 }
 
 export async function generateBranchNameFromDiff(

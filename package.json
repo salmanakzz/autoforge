@@ -16,6 +16,10 @@
             {
                 "command": "autoforge.autoBranch",
                 "title": "AutoForge: Auto Branch"
+            },
+            {
+                "command": "autoforge.autoCommit",
+                "title": "AutoForge: Auto Commit"
             }
         ]
     },
