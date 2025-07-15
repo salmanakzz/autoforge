@@ -8,4 +8,6 @@ module.exports = {
     transform: {
         ...tsJestTransformCfg,
     },
+    roots: ["<rootDir>/src"], // ✅ Ensures only source files are tested
+    testMatch: ["**/__tests__/**/*.ts", "**/?(*.)+(spec|test).ts"],
 };
