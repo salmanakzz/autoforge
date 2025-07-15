@@ -25,7 +25,7 @@
         "watch": "tsc -watch -p ./",
         "pretest": "npm run compile && npm run lint",
         "lint": "eslint src",
-        "test": "vscode-test"
+        "test": "jest"
     },
     "devDependencies": {
         "@types/jest": "^30.0.0",
