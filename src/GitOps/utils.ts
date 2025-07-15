@@ -11,7 +11,9 @@ export function getGitDiff(): Promise<{ diff: string; cwd: string }> {
         const cwd = workspaceFolders[0].uri.fsPath;
 
         exec("git diff --staged", { cwd }, (err, stdout, stderr) => {
-            if (err) return reject(stderr || err.message);
+            if (err) {
+                return reject(stderr || err.message);
+            }
             resolve({ diff: stdout, cwd });
         });
     });
