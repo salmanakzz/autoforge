@@ -35,7 +35,7 @@
         "@types/jest": "^30.0.0",
         "@types/mocha": "^10.0.10",
         "@types/node": "20.x",
-        "@types/vscode": "^1.101.0",
+        "@types/vscode": "^1.106.1",
         "@typescript-eslint/eslint-plugin": "^8.31.1",
         "@typescript-eslint/parser": "^8.31.1",
         "@vscode/test-cli": "^0.0.11",
@@ -44,5 +44,8 @@
         "jest": "^30.0.4",
         "ts-jest": "^29.4.0",
         "typescript": "^5.8.3"
+    },
+    "dependencies": {
+        "vscode": "^1.1.37"
     }
 }
