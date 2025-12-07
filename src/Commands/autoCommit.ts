@@ -11,8 +11,10 @@ export async function autoCommit() {
     if (input) {
         exec(`git commit -m "${input}"`, { cwd }, (err, stdout, stderr) => {
             if (err) {
+                const errorMessage =
+                    stderr?.trim() || stdout?.trim() || err.message;
                 vscode.window.showErrorMessage(
-                    `❌ Failed to commit message: ${stderr.trim()}`
+                    `❌ Failed to commit message: ${errorMessage}`
                 );
                 return;
             }
