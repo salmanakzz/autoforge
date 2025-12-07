@@ -14,6 +14,15 @@ export function getGitDiff(): Promise<{ diff: string; cwd: string }> {
             if (err) {
                 return reject(stderr || err.message);
             }
+
+            if (!stdout || stdout.trim().length === 0) {
+                return reject(
+                    new Error(
+                        "No staged changes found. Stage your files first."
+                    )
+                );
+            }
+
             resolve({ diff: stdout, cwd });
         });
     });

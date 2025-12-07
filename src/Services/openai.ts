@@ -1,8 +1,12 @@
-const chatCompletion = async (
-    prompt: string,
-    systemPrompt?: string,
-    model = "gpt-4"
-): Promise<string> => {
+const openaiChatCompletion = async ({
+    prompt,
+    systemPrompt,
+    model = "gpt-4",
+}: {
+    prompt: string;
+    systemPrompt?: string;
+    model?: string;
+}): Promise<string> => {
     try {
         const res = await fetch("https://api.openai.com/v1/chat/completions", {
             method: "POST",
@@ -28,4 +32,4 @@ const chatCompletion = async (
     }
 };
 
-export { chatCompletion };
+export { openaiChatCompletion };
