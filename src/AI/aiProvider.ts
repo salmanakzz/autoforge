@@ -1,35 +1,20 @@
+import { chatCompletion } from "../Services/openai";
+
 type AIProviderOptions = {
     prompt: string;
     systemPrompt?: string;
-    model?: string;
 };
 
 export async function callAIProvider({
     prompt,
     systemPrompt,
-    model = "gpt-4",
 }: AIProviderOptions): Promise<string> {
-    // Swap this with Ollama/local/OpenAI provider
-    // const res = await fetch("https://api.openai.com/v1/chat/completions", {
-    //     method: "POST",
-    //     headers: {
-    //         "Content-Type": "application/json",
-    //         Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
-    //     },
-    //     body: JSON.stringify({
-    //         model,
-    //         messages: [
-    //             ...(systemPrompt
-    //                 ? [{ role: "system", content: systemPrompt }]
-    //                 : []),
-    //             { role: "user", content: prompt },
-    //         ],
-    //     }),
-    // });
-
-    // const json = await res.json();
-    // return json.choices?.[0]?.message?.content?.trim() || "";
-    return "nice-commit-message"; // Mock response for testing
+    try {
+        const res = await chatCompletion(prompt, systemPrompt);
+        return res;
+    } catch (error) {
+        throw new Error("Failed to call AI provider: " + error);
+    }
 }
 
 export async function generateBranchNameFromDiff(
