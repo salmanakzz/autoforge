@@ -20,8 +20,54 @@
             {
                 "command": "autoforge.autoCommit",
                 "title": "AutoForge: Auto Commit"
+            },
+            {
+                "command": "autoforge.scm.autoCommit",
+                "title": "Auto Commit",
+                "icon": "$(sparkle)"
+            },
+            {
+                "command": "autoforge.scm.autoBranch",
+                "title": "Auto Branch",
+                "icon": "$(git-branch)"
+            },
+            {
+                "command": "autoforge.scm.autoCommitAndBranch",
+                "title": "Auto Commit & Branch",
+                "icon": "$(rocket)"
             }
-        ]
+        ],
+        "menus": {
+            "scm/title": [
+                {
+                    "command": "autoforge.scm.autoCommit",
+                    "when": "scmProvider == git",
+                    "group": "navigation"
+                },
+                {
+                    "command": "autoforge.scm.autoBranch",
+                    "when": "scmProvider == git",
+                    "group": "navigation"
+                },
+                {
+                    "command": "autoforge.scm.autoCommitAndBranch",
+                    "when": "scmProvider == git",
+                    "group": "navigation"
+                }
+            ],
+            "scm/sourceControl": [
+                {
+                    "command": "autoforge.scm.autoCommit",
+                    "when": "scmProvider == git",
+                    "group": "inline"
+                },
+                {
+                    "command": "autoforge.scm.autoBranch",
+                    "when": "scmProvider == git",
+                    "group": "inline"
+                }
+            ]
+        }
     },
     "scripts": {
         "vscode:prepublish": "npm run compile",
