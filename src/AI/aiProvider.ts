@@ -1,3 +1,4 @@
+import { customChatCompletion } from "../Services/custom";
 import { groqChatCompletion } from "../Services/groq";
 import { sanitizeAIOutput } from "../utils/sanitizeAIOutput";
 
@@ -11,7 +12,7 @@ export async function callAIProvider({
     systemPrompt,
 }: AIProviderOptions): Promise<string> {
     try {
-        const res = await groqChatCompletion({ prompt, systemPrompt });
+        const res = await customChatCompletion({ prompt, systemPrompt });
         return sanitizeAIOutput(res);
     } catch (error) {
         throw new Error("Failed to call AI provider: " + error);
