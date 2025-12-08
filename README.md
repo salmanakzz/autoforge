@@ -1,71 +1,114 @@
-# autoforge README
+# AutoForge
 
-This is the README for your extension "autoforge". After writing up a brief description, we recommend including the following sections.
+AutoForge is a VS Code extension that uses AI to automatically generate meaningful commit messages and branch names based on your code changes. It streamlines your Git workflow by eliminating the need to manually write commit messages and branch names.
 
 ## Features
 
-Describe specific features of your extension including screenshots of your extension in action. Image paths are relative to this README file.
+### 🤖 AI-Powered Commit Messages
+Automatically generate commit messages by analyzing your staged changes. The extension uses AI to understand your code changes and suggests appropriate commit messages.
 
-For example if there is an image subfolder under your extension project workspace:
+### 🌿 AI-Powered Branch Names
+Create new branches with AI-generated names that reflect the purpose of your changes. No more thinking about branch naming conventions!
 
-\!\[feature X\]\(images/feature-x.png\)
+### 🔄 Source Control Integration
+Seamlessly integrated with VS Code's Source Control view, similar to GitHub Copilot's "Generate Commit" feature. Access auto-commit and auto-branch functionality directly from the Source Control panel.
 
-> Tip: Many popular extensions utilize animations. This is an excellent way to show off your extension! We recommend short, focused animations that are easy to follow.
+### ⚡ Quick Actions
+- **Auto Commit**: Generate and commit with an AI-generated message
+- **Auto Branch**: Create a new branch with an AI-generated name
+- **Auto Commit & Branch**: Create a branch and commit in one action
 
-## Requirements
+## Usage
 
-If you have any requirements or dependencies, add a section describing those and how to install and configure them.
+### Command Palette
+
+You can access AutoForge commands from the Command Palette (`Ctrl+Shift+P` / `Cmd+Shift+P`):
+
+- **AutoForge: Auto Commit** - Generate and commit with an AI-generated message
+- **AutoForge: Auto Branch** - Create a new branch with an AI-generated name
+
+### Source Control View
+
+When working with a Git repository, you'll see AutoForge buttons in the Source Control view:
+
+1. **Auto Commit** button (✨) - Appears in the Source Control title bar and as an inline action
+2. **Auto Branch** button (🌿) - Appears in the Source Control title bar and as an inline action
+3. **Auto Commit & Branch** button (🚀) - Appears in the Source Control title bar
+
+These buttons are only visible when the Git SCM provider is active.
+
+### Workflow
+
+1. **For Auto Commit:**
+   - Stage your changes using Git
+   - Click the "Auto Commit" button in the Source Control view, or use the Command Palette
+   - Review and edit the AI-generated commit message if needed
+   - Confirm to commit
+
+2. **For Auto Branch:**
+   - Click the "Auto Branch" button in the Source Control view, or use the Command Palette
+   - Review and edit the AI-generated branch name if needed
+   - Confirm to create and checkout the new branch
+
+3. **For Auto Commit & Branch:**
+   - Stage your changes using Git
+   - Click the "Auto Commit & Branch" button in the Source Control view
+   - First, a new branch will be created with an AI-generated name
+   - Then, your changes will be committed with an AI-generated message
 
 ## Extension Settings
 
-Include if your extension adds any VS Code settings through the `contributes.configuration` extension point.
-
-For example:
-
 This extension contributes the following settings:
 
-* `myExtension.enable`: Enable/disable this extension.
-* `myExtension.thing`: Set to `blah` to do something.
+* `myExtension.provider`: Choose which AI provider to use
+  - Options: `groq`, `custom`
+  - Default: `groq`
+
+* `myExtension.apiKey`: API Key for the selected provider
+  - Default: `""`
+  - **Note**: You need to configure your API key before using the extension
+
+## Requirements
+
+- VS Code version 1.106.0 or higher
+- A Git repository initialized in your workspace
+- An API key for the selected AI provider (configured in settings)
+
+## Configuration
+
+1. Open VS Code Settings (`Ctrl+,` / `Cmd+,`)
+2. Search for "AutoForge" or navigate to the extension settings
+3. Configure your AI provider and API key:
+   - Set `myExtension.provider` to your preferred provider (`groq` or `custom`)
+   - Set `myExtension.apiKey` to your API key
 
 ## Known Issues
 
-Calling out known issues can help limit users opening duplicate issues against your extension.
+None at the moment. If you encounter any issues, please report them on the extension's GitHub repository.
 
 ## Release Notes
 
-Users appreciate release notes as you update your extension.
+### 0.0.1
 
-### 1.0.0
+Initial release of AutoForge with the following features:
 
-Initial release of ...
-
-### 1.0.1
-
-Fixed issue #.
-
-### 1.1.0
-
-Added features X, Y, and Z.
+- ✅ AI-powered commit message generation
+- ✅ AI-powered branch name generation
+- ✅ Command Palette integration
+- ✅ Source Control view integration
+- ✅ Auto Commit & Branch combined action
+- ✅ Support for multiple AI providers (Groq, Custom)
 
 ---
 
-## Following extension guidelines
+## Contributing
 
-Ensure that you've read through the extensions guidelines and follow the best practices for creating your extension.
+Contributions are welcome! Please feel free to submit a Pull Request.
 
-* [Extension Guidelines](https://code.visualstudio.com/api/references/extension-guidelines)
+## License
 
-## Working with Markdown
+[Add your license information here]
 
-You can author your README using Visual Studio Code. Here are some useful editor keyboard shortcuts:
+---
 
-* Split the editor (`Cmd+\` on macOS or `Ctrl+\` on Windows and Linux).
-* Toggle preview (`Shift+Cmd+V` on macOS or `Shift+Ctrl+V` on Windows and Linux).
-* Press `Ctrl+Space` (Windows, Linux, macOS) to see a list of Markdown snippets.
-
-## For more information
-
-* [Visual Studio Code's Markdown Support](http://code.visualstudio.com/docs/languages/markdown)
-* [Markdown Syntax Reference](https://help.github.com/articles/markdown-basics/)
-
-**Enjoy!**
+**Enjoy automated Git workflows with AutoForge!** 🚀
