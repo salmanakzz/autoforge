@@ -1,7 +1,7 @@
 {
     "name": "autoforge",
-    "displayName": "autoforge",
-    "description": "auto branch, commits, code generator",
+    "displayName": "Autoforge",
+    "description": "Auto branch, commits, code generator",
     "version": "0.0.1",
     "publisher": "akzz",
     "engines": {
@@ -12,6 +12,7 @@
     ],
     "activationEvents": [],
     "main": "./out/extension.js",
+    "icon": "icon2.png",
     "contributes": {
         "configuration": {
             "type": "object",
