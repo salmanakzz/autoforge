@@ -15,10 +15,21 @@
         "configuration": {
             "type": "object",
             "properties": {
-                "myExtension.groqApiKey": {
+                "myExtension.provider": {
+                    "type": "string",
+                    "enum": [
+                        "groq",
+                        "custom"
+                    ],
+                    "default": "groq",
+                    "description": "Choose which AI provider to use",
+                    "order": 1
+                },
+                "myExtension.apiKey": {
                     "type": "string",
                     "default": "",
-                    "description": "Your Groq API Key"
+                    "description": "API Key for the selected provider",
+                    "order": 2
                 }
             }
         },

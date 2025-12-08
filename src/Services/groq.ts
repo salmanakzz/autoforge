@@ -16,7 +16,11 @@ const groqChatCompletion = async ({
     try {
         const groqApiKey = vscode.workspace
             .getConfiguration("myExtension")
-            .get("groqApiKey");
+            .get("apiKey");
+
+        if (!groqApiKey) {
+            throw new Error("Groq API key is not set in the configuration.");
+        }
 
         const res = await fetch(
             "https://api.groq.com/openai/v1/chat/completions",

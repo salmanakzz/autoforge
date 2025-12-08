@@ -1,3 +1,4 @@
+import * as vscode from "vscode";
 import { customChatCompletion } from "../Services/custom";
 import { groqChatCompletion } from "../Services/groq";
 import { sanitizeAIOutput } from "../utils/sanitizeAIOutput";
@@ -12,10 +13,26 @@ export async function callAIProvider({
     systemPrompt,
 }: AIProviderOptions): Promise<string> {
     try {
-        const res = await customChatCompletion({ prompt, systemPrompt });
-        return sanitizeAIOutput(res);
+        const selectedProvider = vscode.workspace
+            .getConfiguration("myExtension")
+            .get("provider");
+
+        if (!selectedProvider) {
+            throw new Error("AI provider is not set in the configuration.");
+        }
+
+        if (selectedProvider === "groq") {
+            const res = await groqChatCompletion({ prompt, systemPrompt });
+            return sanitizeAIOutput(res);
+        } else if (selectedProvider === "custom") {
+            const res = await customChatCompletion({ prompt, systemPrompt });
+            return sanitizeAIOutput(res);
+        } else {
+            throw new Error("Unsupported AI provider selected.");
+        }
     } catch (error) {
-        throw new Error("Failed to call AI provider: " + error);
+        console.error("Failed to call AI provider: " + error);
+        throw error;
     }
 }
 
