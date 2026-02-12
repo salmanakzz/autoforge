@@ -105,13 +105,17 @@ Initial release of AutoForge with the following features:
 
 ---
 
+## Privacy
+
+AutoForge sends staged git diff data to the AI service to generate commit messages. No data is stored.
+
 ## Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.
 
 ## License
 
-[Add your license information here]
+MIT
 
 ---
 
