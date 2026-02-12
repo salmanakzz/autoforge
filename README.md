@@ -86,18 +86,6 @@ This extension contributes the following settings:
     - Set `myExtension.provider` to your preferred provider (`groq` or `custom`)
     - Set `myExtension.apiKey` to your API key
 
-## 🧪 Running Tests
-
-This project uses **Jest** for testing.
-
-### 1️⃣ Install dependencies
-
-```bash
-npm install
-
-npm test
-```
-
 ## Known Issues
 
 None at the moment. If you encounter any issues, please report them on the extension's GitHub repository.
