@@ -111,7 +111,7 @@ AutoForge sends staged git diff data to the AI service to generate commit messag
 
 ## Contributing
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+Contributions are welcome! Please read [CONTRIBUTING.md](./CONTRIBUTING.md) before submitting a PR.
 
 ## License
 
