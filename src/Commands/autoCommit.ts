@@ -6,6 +6,11 @@ import { updateGitInputBox } from "../utils/git-utils";
 export async function autoCommit(section = "cp") {
     const { msg, cwd } = await generateCommit();
 
+    if (!msg || msg.length > 200) {
+        vscode.window.showErrorMessage("⚠️ Invalid commit message.");
+        return;
+    }
+
     switch (section) {
         case "cp":
             handleAutoCommitProcess(msg, cwd);

@@ -4,6 +4,7 @@
     "description": "AI-powered Git commit message generator inside VS Code",
     "version": "0.0.1",
     "publisher": "akzz",
+    "license": "MIT",
     "engines": {
         "vscode": "^1.106.0"
     },
