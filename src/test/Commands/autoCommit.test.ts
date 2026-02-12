@@ -1,93 +1,55 @@
 import * as vscode from "vscode";
-import { exec } from "child_process";
-import { autoCommit } from "../../Commands/autoCommit"; // Adjust path to your file
+import { autoCommit } from "../../Commands/autoCommit";
 import { generateCommit } from "../../GitOps/generateCommit";
+import { handleAutoCommitProcess } from "../../utils/vscode-ui";
+import { updateGitInputBox } from "../../utils/git-utils";
 
-// 1. Mock the dependencies
 jest.mock("vscode", () => ({
     window: {
-        showInputBox: jest.fn(),
-        showInformationMessage: jest.fn(),
         showErrorMessage: jest.fn(),
     },
 }));
-jest.mock("child_process");
+
 jest.mock("../../GitOps/generateCommit");
+jest.mock("../../utils/vscode-ui");
+jest.mock("../../utils/git-utils");
 
 describe("autoCommit", () => {
-    const mockMsg = "feat: initial commit";
-    const mockCwd = "/mock/path";
+    const mockMsg = "feat: new commit";
+    const mockCwd = "/mock/project";
 
     beforeEach(() => {
         jest.clearAllMocks();
 
-        // Setup default mock return for generateCommit
         (generateCommit as jest.Mock).mockResolvedValue({
             msg: mockMsg,
             cwd: mockCwd,
         });
     });
 
-    it("should successfully commit when user confirms the input box", async () => {
-        // Arrange: Mock showInputBox to return the message
-        (vscode.window.showInputBox as jest.Mock).mockResolvedValue(mockMsg);
+    it("should call handleAutoCommitProcess when section is 'cp'", async () => {
+        await autoCommit("cp");
 
-        // Mock exec to simulate success (null error)
-        (exec as unknown as jest.Mock).mockImplementation(
-            (cmd, opts, callback) => {
-                callback(null, "stdout success", "");
-            },
-        );
-
-        // Act
-        await autoCommit();
-
-        // Assert
         expect(generateCommit).toHaveBeenCalled();
-        expect(vscode.window.showInputBox).toHaveBeenCalledWith(
-            expect.objectContaining({ value: mockMsg }),
-        );
-        expect(exec).toHaveBeenCalledWith(
-            `git commit -m "${mockMsg}"`,
-            { cwd: mockCwd },
-            expect.any(Function),
-        );
-        expect(vscode.window.showInformationMessage).toHaveBeenCalledWith(
-            expect.stringContaining("✅ Message commited"),
-        );
+        expect(handleAutoCommitProcess).toHaveBeenCalledWith(mockMsg, mockCwd);
+        expect(updateGitInputBox).not.toHaveBeenCalled();
     });
 
-    it("should show error message if git commit fails", async () => {
-        // Arrange
-        (vscode.window.showInputBox as jest.Mock).mockResolvedValue(mockMsg);
+    it("should call updateGitInputBox when section is 'scm'", async () => {
+        await autoCommit("scm");
 
-        // Mock exec to simulate a git error
-        const gitError = new Error("Git error");
-        (exec as unknown as jest.Mock).mockImplementation(
-            (cmd, opts, callback) => {
-                callback(gitError, "", "fatal: not a git repository");
-            },
-        );
+        expect(generateCommit).toHaveBeenCalled();
+        expect(updateGitInputBox).toHaveBeenCalledWith(mockMsg);
+        expect(handleAutoCommitProcess).not.toHaveBeenCalled();
+    });
 
-        // Act
-        await autoCommit();
+    it("should show error message for invalid section", async () => {
+        await autoCommit("invalid");
 
-        // Assert
         expect(vscode.window.showErrorMessage).toHaveBeenCalledWith(
-            expect.stringContaining(
-                "❌ Failed to commit message: fatal: not a git repository",
-            ),
+            "🚫 Invalid section",
         );
-    });
-
-    it("should do nothing if user cancels the input box", async () => {
-        // Arrange: User hits Escape (returns undefined)
-        (vscode.window.showInputBox as jest.Mock).mockResolvedValue(undefined);
-
-        // Act
-        await autoCommit();
-
-        // Assert
-        expect(exec).not.toHaveBeenCalled();
+        expect(handleAutoCommitProcess).not.toHaveBeenCalled();
+        expect(updateGitInputBox).not.toHaveBeenCalled();
     });
 });
