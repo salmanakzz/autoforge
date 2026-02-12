@@ -4,9 +4,15 @@ import { autoCommit } from "../../Commands/autoCommit"; // Adjust path to your f
 import { generateCommit } from "../../GitOps/generateCommit";
 
 // 1. Mock the dependencies
-jest.mock("vscode");
+jest.mock("vscode", () => ({
+    window: {
+        showInputBox: jest.fn(),
+        showInformationMessage: jest.fn(),
+        showErrorMessage: jest.fn(),
+    },
+}));
 jest.mock("child_process");
-jest.mock("../GitOps/generateCommit");
+jest.mock("../../GitOps/generateCommit");
 
 describe("autoCommit", () => {
     const mockMsg = "feat: initial commit";
