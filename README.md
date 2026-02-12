@@ -95,6 +95,9 @@ This project uses **Jest** for testing.
 ```bash
 npm install
 
+npm test
+```
+
 ## Known Issues
 
 None at the moment. If you encounter any issues, please report them on the extension's GitHub repository.
@@ -125,4 +128,7 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 ---
 
 **Enjoy automated Git workflows with AutoForge!** 🚀
+
+```
+
 ```
