@@ -5,15 +5,19 @@ AutoForge is a VS Code extension that uses AI to automatically generate meaningf
 ## Features
 
 ### 🤖 AI-Powered Commit Messages
+
 Automatically generate commit messages by analyzing your staged changes. The extension uses AI to understand your code changes and suggests appropriate commit messages.
 
 ### 🌿 AI-Powered Branch Names
+
 Create new branches with AI-generated names that reflect the purpose of your changes. No more thinking about branch naming conventions!
 
 ### 🔄 Source Control Integration
+
 Seamlessly integrated with VS Code's Source Control view, similar to GitHub Copilot's "Generate Commit" feature. Access auto-commit and auto-branch functionality directly from the Source Control panel.
 
 ### ⚡ Quick Actions
+
 - **Auto Commit**: Generate and commit with an AI-generated message
 - **Auto Branch**: Create a new branch with an AI-generated name
 - **Auto Commit & Branch**: Create a branch and commit in one action
@@ -40,33 +44,33 @@ These buttons are only visible when the Git SCM provider is active.
 ### Workflow
 
 1. **For Auto Commit:**
-   - Stage your changes using Git
-   - Click the "Auto Commit" button in the Source Control view, or use the Command Palette
-   - Review and edit the AI-generated commit message if needed
-   - Confirm to commit
+    - Stage your changes using Git
+    - Click the "Auto Commit" button in the Source Control view, or use the Command Palette
+    - Review and edit the AI-generated commit message if needed
+    - Confirm to commit
 
 2. **For Auto Branch:**
-   - Click the "Auto Branch" button in the Source Control view, or use the Command Palette
-   - Review and edit the AI-generated branch name if needed
-   - Confirm to create and checkout the new branch
+    - Click the "Auto Branch" button in the Source Control view, or use the Command Palette
+    - Review and edit the AI-generated branch name if needed
+    - Confirm to create and checkout the new branch
 
 3. **For Auto Commit & Branch:**
-   - Stage your changes using Git
-   - Click the "Auto Commit & Branch" button in the Source Control view
-   - First, a new branch will be created with an AI-generated name
-   - Then, your changes will be committed with an AI-generated message
+    - Stage your changes using Git
+    - Click the "Auto Commit & Branch" button in the Source Control view
+    - First, a new branch will be created with an AI-generated name
+    - Then, your changes will be committed with an AI-generated message
 
 ## Extension Settings
 
 This extension contributes the following settings:
 
-* `myExtension.provider`: Choose which AI provider to use
-  - Options: `groq`, `custom`
-  - Default: `groq`
+- `myExtension.provider`: Choose which AI provider to use
+    - Options: `groq`, `custom`
+    - Default: `groq`
 
-* `myExtension.apiKey`: API Key for the selected provider
-  - Default: `""`
-  - **Note**: You need to configure your API key before using the extension
+- `myExtension.apiKey`: API Key for the selected provider
+    - Default: `""`
+    - **Note**: You need to configure your API key before using the extension
 
 ## Requirements
 
@@ -79,8 +83,17 @@ This extension contributes the following settings:
 1. Open VS Code Settings (`Ctrl+,` / `Cmd+,`)
 2. Search for "AutoForge" or navigate to the extension settings
 3. Configure your AI provider and API key:
-   - Set `myExtension.provider` to your preferred provider (`groq` or `custom`)
-   - Set `myExtension.apiKey` to your API key
+    - Set `myExtension.provider` to your preferred provider (`groq` or `custom`)
+    - Set `myExtension.apiKey` to your API key
+
+## 🧪 Running Tests
+
+This project uses **Jest** for testing.
+
+### 1️⃣ Install dependencies
+
+```bash
+npm install
 
 ## Known Issues
 
@@ -112,3 +125,4 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 ---
 
 **Enjoy automated Git workflows with AutoForge!** 🚀
+```
