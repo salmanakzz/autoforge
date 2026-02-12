@@ -20,7 +20,7 @@ Seamlessly integrated with VS Code's Source Control view, similar to GitHub Copi
 
 - **Auto Commit**: Generate and commit with an AI-generated message
 - **Auto Branch**: Create a new branch with an AI-generated name
-- **Auto Commit & Branch**: Create a branch and commit in one action
+- **Auto Branch & Commit**: Create a branch and commit in one action
 
 ## Usage
 
@@ -37,7 +37,7 @@ When working with a Git repository, you'll see AutoForge buttons in the Source C
 
 1. **Auto Commit** button (✨) - Appears in the Source Control title bar and as an inline action
 2. **Auto Branch** button (🌿) - Appears in the Source Control title bar and as an inline action
-3. **Auto Commit & Branch** button (🚀) - Appears in the Source Control title bar
+3. **Auto Branch & Commit** button (🚀) - Appears in the Source Control title bar
 
 These buttons are only visible when the Git SCM provider is active.
 
@@ -54,9 +54,9 @@ These buttons are only visible when the Git SCM provider is active.
     - Review and edit the AI-generated branch name if needed
     - Confirm to create and checkout the new branch
 
-3. **For Auto Commit & Branch:**
+3. **For Auto Branch & Commit:**
     - Stage your changes using Git
-    - Click the "Auto Commit & Branch" button in the Source Control view
+    - Click the "Auto Branch & Commit" button in the Source Control view
     - First, a new branch will be created with an AI-generated name
     - Then, your changes will be committed with an AI-generated message
 
@@ -100,7 +100,7 @@ Initial release of AutoForge with the following features:
 - ✅ AI-powered branch name generation
 - ✅ Command Palette integration
 - ✅ Source Control view integration
-- ✅ Auto Commit & Branch combined action
+- ✅ Auto Branch & Commit combined action
 - ✅ Support for multiple AI providers (Groq, Custom)
 
 ---
