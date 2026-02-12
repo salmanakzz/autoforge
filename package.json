@@ -1,15 +1,32 @@
 {
     "name": "autoforge",
     "displayName": "Autoforge",
-    "description": "Auto branch, commits, code generator",
+    "description": "AI-powered Git commit message generator inside VS Code",
     "version": "0.0.1",
     "publisher": "akzz",
     "engines": {
         "vscode": "^1.106.0"
     },
     "categories": [
+        "SCM Providers",
         "Other"
     ],
+    "keywords": [
+        "git",
+        "commit",
+        "ai",
+        "source control",
+        "productivity",
+        "automation"
+    ],
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/salmanakzz/autoforge"
+    },
+    "homepage": "https://github.com/salmanakzz/autoforge#readme",
+    "bugs": {
+        "url": "https://github.com/salmanakzz/autoforge/issues"
+    },
     "activationEvents": [],
     "main": "./out/extension.js",
     "icon": "icon2.png",
