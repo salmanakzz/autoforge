@@ -51,11 +51,11 @@ export function registerScmIntegration(context: vscode.ExtensionContext) {
     );
 
     /**
-     * Command: Auto Commit & Branch
+     * Command: Auto Branch & Commit
      * Creates a new branch and then commits changes in one action
      */
     const autoCommitAndBranchCommand = vscode.commands.registerCommand(
-        "autoforge.scm.autoCommitAndBranch",
+        "autoforge.scm.autoBranchAndCommit",
         async () => {
             try {
                 // First create branch, then commit
@@ -82,6 +82,6 @@ export function registerScmIntegration(context: vscode.ExtensionContext) {
     console.log("   - Auto Commit command available in Source Control view");
     console.log("   - Auto Branch command available in Source Control view");
     console.log(
-        "   - Auto Commit & Branch command available in Source Control view",
+        "   - Auto Branch & Commit command available in Source Control view",
     );
 }

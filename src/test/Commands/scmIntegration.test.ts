@@ -47,15 +47,15 @@ describe("registerScmIntegration", () => {
         // Verify the command IDs
         expect(mockRegisterCommand).toHaveBeenCalledWith(
             "autoforge.scm.autoCommit",
-            expect.any(Function)
+            expect.any(Function),
         );
         expect(mockRegisterCommand).toHaveBeenCalledWith(
             "autoforge.scm.autoBranch",
-            expect.any(Function)
+            expect.any(Function),
         );
         expect(mockRegisterCommand).toHaveBeenCalledWith(
-            "autoforge.scm.autoCommitAndBranch",
-            expect.any(Function)
+            "autoforge.scm.autoBranchAndCommit",
+            expect.any(Function),
         );
     });
 
@@ -75,7 +75,7 @@ describe("registerScmIntegration", () => {
 
             // Get the registered command handler
             const commandHandler = mockRegisterCommand.mock.calls.find(
-                (call) => call[0] === "autoforge.scm.autoCommit"
+                (call) => call[0] === "autoforge.scm.autoCommit",
             )?.[1];
 
             expect(commandHandler).toBeDefined();
@@ -95,14 +95,14 @@ describe("registerScmIntegration", () => {
             registerScmIntegration(mockContext);
 
             const commandHandler = mockRegisterCommand.mock.calls.find(
-                (call) => call[0] === "autoforge.scm.autoCommit"
+                (call) => call[0] === "autoforge.scm.autoCommit",
             )?.[1];
 
             await commandHandler();
 
             expect(autoCommit).toHaveBeenCalledTimes(1);
             expect(mockShowErrorMessage).toHaveBeenCalledWith(
-                "Failed to auto commit: Commit failed"
+                "Failed to auto commit: Commit failed",
             );
         });
 
@@ -112,13 +112,13 @@ describe("registerScmIntegration", () => {
             registerScmIntegration(mockContext);
 
             const commandHandler = mockRegisterCommand.mock.calls.find(
-                (call) => call[0] === "autoforge.scm.autoCommit"
+                (call) => call[0] === "autoforge.scm.autoCommit",
             )?.[1];
 
             await commandHandler();
 
             expect(mockShowErrorMessage).toHaveBeenCalledWith(
-                "Failed to auto commit: String error"
+                "Failed to auto commit: String error",
             );
         });
     });
@@ -130,7 +130,7 @@ describe("registerScmIntegration", () => {
             registerScmIntegration(mockContext);
 
             const commandHandler = mockRegisterCommand.mock.calls.find(
-                (call) => call[0] === "autoforge.scm.autoBranch"
+                (call) => call[0] === "autoforge.scm.autoBranch",
             )?.[1];
 
             expect(commandHandler).toBeDefined();
@@ -148,19 +148,19 @@ describe("registerScmIntegration", () => {
             registerScmIntegration(mockContext);
 
             const commandHandler = mockRegisterCommand.mock.calls.find(
-                (call) => call[0] === "autoforge.scm.autoBranch"
+                (call) => call[0] === "autoforge.scm.autoBranch",
             )?.[1];
 
             await commandHandler();
 
             expect(autoBranch).toHaveBeenCalledTimes(1);
             expect(mockShowErrorMessage).toHaveBeenCalledWith(
-                "Failed to auto branch: Branch creation failed"
+                "Failed to auto branch: Branch creation failed",
             );
         });
     });
 
-    describe("autoforge.scm.autoCommitAndBranch command", () => {
+    describe("autoforge.scm.autoBranchAndCommit command", () => {
         beforeEach(() => {
             jest.useFakeTimers();
         });
@@ -176,7 +176,7 @@ describe("registerScmIntegration", () => {
             registerScmIntegration(mockContext);
 
             const commandHandler = mockRegisterCommand.mock.calls.find(
-                (call) => call[0] === "autoforge.scm.autoCommitAndBranch"
+                (call) => call[0] === "autoforge.scm.autoBranchAndCommit",
             )?.[1];
 
             expect(commandHandler).toBeDefined();
@@ -187,15 +187,17 @@ describe("registerScmIntegration", () => {
             // Fast-forward timers to skip the delay and run all pending timers
             jest.advanceTimersByTime(500);
             await jest.runAllTimersAsync();
-            
+
             await promise;
 
             // Verify both functions were called in order
             expect(autoBranch).toHaveBeenCalledTimes(1);
             expect(autoCommit).toHaveBeenCalledTimes(1);
             // Verify order: autoBranch should be called before autoCommit
-            const branchCallOrder = (autoBranch as jest.Mock).mock.invocationCallOrder[0];
-            const commitCallOrder = (autoCommit as jest.Mock).mock.invocationCallOrder[0];
+            const branchCallOrder = (autoBranch as jest.Mock).mock
+                .invocationCallOrder[0];
+            const commitCallOrder = (autoCommit as jest.Mock).mock
+                .invocationCallOrder[0];
             expect(branchCallOrder).toBeLessThan(commitCallOrder);
             expect(mockShowErrorMessage).not.toHaveBeenCalled();
         });
@@ -208,7 +210,7 @@ describe("registerScmIntegration", () => {
             registerScmIntegration(mockContext);
 
             const commandHandler = mockRegisterCommand.mock.calls.find(
-                (call) => call[0] === "autoforge.scm.autoCommitAndBranch"
+                (call) => call[0] === "autoforge.scm.autoBranchAndCommit",
             )?.[1];
 
             await commandHandler();
@@ -216,7 +218,7 @@ describe("registerScmIntegration", () => {
             expect(autoBranch).toHaveBeenCalledTimes(1);
             expect(autoCommit).not.toHaveBeenCalled();
             expect(mockShowErrorMessage).toHaveBeenCalledWith(
-                "Failed to auto commit and branch: Branch failed"
+                "Failed to auto commit and branch: Branch failed",
             );
         });
 
@@ -228,7 +230,7 @@ describe("registerScmIntegration", () => {
             registerScmIntegration(mockContext);
 
             const commandHandler = mockRegisterCommand.mock.calls.find(
-                (call) => call[0] === "autoforge.scm.autoCommitAndBranch"
+                (call) => call[0] === "autoforge.scm.autoBranchAndCommit",
             )?.[1];
 
             const promise = commandHandler();
@@ -239,7 +241,7 @@ describe("registerScmIntegration", () => {
             expect(autoBranch).toHaveBeenCalledTimes(1);
             expect(autoCommit).toHaveBeenCalledTimes(1);
             expect(mockShowErrorMessage).toHaveBeenCalledWith(
-                "Failed to auto commit and branch: Commit failed"
+                "Failed to auto commit and branch: Commit failed",
             );
         });
     });
@@ -250,19 +252,18 @@ describe("registerScmIntegration", () => {
         registerScmIntegration(mockContext);
 
         expect(consoleSpy).toHaveBeenCalledWith(
-            "✅ AutoForge SCM integration registered"
+            "✅ AutoForge SCM integration registered",
         );
         expect(consoleSpy).toHaveBeenCalledWith(
-            "   - Auto Commit command available in Source Control view"
+            "   - Auto Commit command available in Source Control view",
         );
         expect(consoleSpy).toHaveBeenCalledWith(
-            "   - Auto Branch command available in Source Control view"
+            "   - Auto Branch command available in Source Control view",
         );
         expect(consoleSpy).toHaveBeenCalledWith(
-            "   - Auto Commit & Branch command available in Source Control view"
+            "   - Auto Branch & Commit command available in Source Control view",
         );
 
         consoleSpy.mockRestore();
     });
 });
-

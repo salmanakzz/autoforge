@@ -72,8 +72,8 @@
                 "icon": "$(git-branch)"
             },
             {
-                "command": "autoforge.scm.autoCommitAndBranch",
-                "title": "Auto Commit & Branch",
+                "command": "autoforge.scm.autoBranchAndCommit",
+                "title": "Auto Branch & Commit",
                 "icon": "$(rocket)"
             }
         ],
@@ -90,7 +90,7 @@
                     "group": "navigation"
                 },
                 {
-                    "command": "autoforge.scm.autoCommitAndBranch",
+                    "command": "autoforge.scm.autoBranchAndCommit",
                     "when": "scmProvider == git",
                     "group": "navigation"
                 }
