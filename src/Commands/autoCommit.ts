@@ -1,27 +1,21 @@
 import * as vscode from "vscode";
-import { exec } from "child_process";
 import { generateCommit } from "../GitOps/generateCommit";
+import { handleAutoCommitProcess } from "../utils/vscode-ui";
+import { updateGitInputBox } from "../utils/git-utils";
 
-export async function autoCommit() {
+export async function autoCommit(section = "cp") {
     const { msg, cwd } = await generateCommit();
-    const input = await vscode.window.showInputBox({
-        value: msg,
-        prompt: "Edit your commit message",
-    });
-    if (input) {
-        exec(`git commit -m "${input}"`, { cwd }, (err, stdout, stderr) => {
-            if (err) {
-                const errorMessage =
-                    stderr?.trim() || stdout?.trim() || err.message;
-                vscode.window.showErrorMessage(
-                    `❌ Failed to commit message: ${errorMessage}`,
-                );
-                return;
-            }
 
-            vscode.window.showInformationMessage(
-                `✅ Message commited: ${input}`,
-            );
-        });
+    switch (section) {
+        case "cp":
+            handleAutoCommitProcess(msg, cwd);
+            break;
+        case "scm":
+            updateGitInputBox(msg);
+            break;
+
+        default:
+            vscode.window.showErrorMessage(`🚫 Invalid section`);
+            break;
     }
 }
