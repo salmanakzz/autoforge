@@ -65,8 +65,8 @@ These buttons are only visible when the Git SCM provider is active.
 This extension contributes the following settings:
 
 - `myExtension.provider`: Choose which AI provider to use
-    - Options: `groq`, `custom`
-    - Default: `groq`
+    - Options: `custom`, `groq`
+    - Default: `custom`
 
 - `myExtension.apiKey`: API Key for the selected provider
     - Default: `""`
@@ -83,7 +83,7 @@ This extension contributes the following settings:
 1. Open VS Code Settings (`Ctrl+,` / `Cmd+,`)
 2. Search for "AutoForge" or navigate to the extension settings
 3. Configure your AI provider and API key:
-    - Set `myExtension.provider` to your preferred provider (`groq` or `custom`)
+    - Set `myExtension.provider` to your preferred provider (`custom` or `groq`)
     - Set `myExtension.apiKey` to your API key
 
 ## Known Issues
@@ -101,7 +101,7 @@ Initial release of AutoForge with the following features:
 - ✅ Command Palette integration
 - ✅ Source Control view integration
 - ✅ Auto Branch & Commit combined action
-- ✅ Support for multiple AI providers (Groq, Custom)
+- ✅ Support for multiple AI providers (Custom, Groq)
 
 ---
 
