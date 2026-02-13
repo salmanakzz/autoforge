@@ -79,19 +79,19 @@ These buttons are only visible when the Git SCM provider is active.
 1. **For Auto Commit:**
     - Stage your changes using Git
     - Click the "Auto Commit" button in the Source Control view, or use the Command Palette
-    - Review and edit the AI-generated commit message if needed
+    - Review and edit the Custom/AI-generated commit message if needed
     - Confirm to commit
 
 2. **For Auto Branch:**
     - Click the "Auto Branch" button in the Source Control view, or use the Command Palette
-    - Review and edit the AI-generated branch name if needed
+    - Review and edit the Custom/AI-generated branch name if needed
     - Confirm to create and checkout the new branch
 
 3. **For Auto Branch & Commit:**
     - Stage your changes using Git
-    - Click the "Auto Branch & Commit" button in the Source Control view
-    - First, a new branch will be created with an AI-generated name
-    - Then, your changes will be committed with an AI-generated message
+    - Click the "Auto Branch & Commit" button in the Source Control view,, or use the Command Palette
+    - First, a new branch will be created with Custom/AI-generated name
+    - Then, your changes will be committed with Custom/AI-generated message
 
 ### Extension Settings
 
