@@ -4,6 +4,7 @@ import * as vscode from "vscode";
 import { autoBranch } from "./Commands/autoBranch";
 import { autoCommit } from "./Commands/autoCommit";
 import { registerScmIntegration } from "./Commands/scmIntegration";
+import { autoBranchAndCommit } from "./Commands/autoBranchAndCommit";
 
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
@@ -19,7 +20,11 @@ export function activate(context: vscode.ExtensionContext) {
     // Register Command Palette commands
     context.subscriptions.push(
         vscode.commands.registerCommand("autoforge.autoBranch", autoBranch),
-        vscode.commands.registerCommand("autoforge.autoCommit", autoCommit)
+        vscode.commands.registerCommand("autoforge.autoCommit", autoCommit),
+        vscode.commands.registerCommand(
+            "autoforge.autoBranchAndCommit",
+            autoBranchAndCommit,
+        ),
     );
 
     // Register Source Control view integration
