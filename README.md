@@ -1,6 +1,6 @@
 # AutoForge
 
-AutoForge is a VS Code extension that uses AI to automatically generate meaningful commit messages and branch names based on your code changes. It streamlines your Git workflow by eliminating the need to manually write commit messages and branch names.
+AutoForge generates meaningful commit messages and branch names using either AI-powered analysis or built-in smart generation — depending on your selected provider.
 
 ## Features
 
@@ -22,16 +22,33 @@ Seamlessly integrated with VS Code's Source Control view, similar to GitHub Copi
 - **Auto Branch**: Create a new branch with an AI-generated name
 - **Auto Branch & Commit**: Create a branch and commit in one action
 
-## Usage
+## 🚀 Usage
 
-### Command Palette
+## 🧭 Command Palette
 
 You can access AutoForge commands from the Command Palette (`Ctrl+Shift+P` / `Cmd+Shift+P`):
 
-- **AutoForge: Auto Commit** - Generate and commit with an AI-generated message
-- **AutoForge: Auto Branch** - Create a new branch with an AI-generated name
+- **AutoForge: Auto Commit** - Generate and commit with Custom/AI-generated message
+- **AutoForge: Auto Branch** - Create a new branch with Custom/AI-generated name
+- **AutoForge: Auto Branch & Commit** - Create a new branch & commit with Custom/AI-generated name & message
 
-### Source Control View
+### 🎬 Demo — Command Palette
+
+#### Auto Commit
+
+![Auto Commit Workflow](https://raw.githubusercontent.com/salmanakzz/autoforge/main/assets/cp/auto-commit.gif)
+
+#### Auto Branch
+
+![Auto Branch Workflow](https://raw.githubusercontent.com/salmanakzz/autoforge/main/assets/cp/auto-branch.gif)
+
+#### Auto Branch & Commit
+
+![Auto Branch and Commit](https://raw.githubusercontent.com/salmanakzz/autoforge/main/assets/cp/auto-branch-commit.gif)
+
+---
+
+## 🌿 Source Control View (Git Integration)
 
 When working with a Git repository, you'll see AutoForge buttons in the Source Control view:
 
@@ -40,6 +57,22 @@ When working with a Git repository, you'll see AutoForge buttons in the Source C
 3. **Auto Branch & Commit** button (🚀) - Appears in the Source Control title bar
 
 These buttons are only visible when the Git SCM provider is active.
+
+### 🎬 Demo — Source Control View
+
+#### Auto Commit
+
+![Auto Commit Workflow](https://raw.githubusercontent.com/salmanakzz/autoforge/main/assets/scm/auto-commit.gif)
+
+#### Auto Branch
+
+![Auto Branch Workflow](https://raw.githubusercontent.com/salmanakzz/autoforge/main/assets/scm/auto-branch.gif)
+
+#### Auto Branch & Commit
+
+![Auto Branch and Commit](https://raw.githubusercontent.com/salmanakzz/autoforge/main/assets/scm/auto-branch-commit.gif)
+
+---
 
 ### Workflow
 
@@ -60,17 +93,61 @@ These buttons are only visible when the Git SCM provider is active.
     - First, a new branch will be created with an AI-generated name
     - Then, your changes will be committed with an AI-generated message
 
-## Extension Settings
+### Extension Settings
+
+AutoForge supports multiple generation providers depending on your workflow and privacy preference.
+
+### Available Providers
+
+#### 🔹 `custom` (Default — No API Key Required)
+
+- Uses AutoForge's **built-in generation logic**
+- Does **not** call any external AI service
+- No API key required
+- All message and branch generation happens locally using customized functions
+
+This mode is ideal if you prefer:
+
+- ✅ Offline-friendly behavior
+- ✅ Faster generation
+- ✅ No external data sharing
+
+> Note: In `custom` mode, generated messages are **rule-based**, not AI-generated.
+
+---
+
+#### 🤖 `groq` (AI-Powered)
+
+- Uses an external AI provider to analyze your staged changes
+- Generates smarter, context-aware commit messages and branch names
+- Requires an API key
+
+This mode is recommended if you want:
+
+- ✅ More intelligent commit summaries
+- ✅ Better contextual naming
+- ✅ AI-assisted workflows
+
+---
+
+### Settings
 
 This extension contributes the following settings:
 
-- `myExtension.provider`: Choose which AI provider to use
+- `myExtension.provider`
+    - Choose which generation provider to use
     - Options: `custom`, `groq`
     - Default: `custom`
 
-- `myExtension.apiKey`: API Key for the selected provider
+- `myExtension.apiKey`
+    - API key for AI providers (required only when using `groq`)
     - Default: `""`
-    - **Note**: You need to configure your API key before using the extension
+
+### 📸 Snap
+
+![Settings UI](https://raw.githubusercontent.com/salmanakzz/autoforge/main/assets/settings-ui.png)
+
+---
 
 ## Requirements
 
@@ -107,7 +184,16 @@ Initial release of AutoForge with the following features:
 
 ## Privacy
 
-AutoForge sends staged git diff data to the AI service to generate commit messages. No data is stored.
+AutoForge respects your workflow and privacy preferences.
+
+- When using **`custom` provider**:
+    - No external requests are made
+    - All generation happens locally
+    - No data leaves your machine
+
+- When using **AI providers (e.g., `groq`)**:
+    - Staged git diff data is sent to the configured AI service to generate commit messages
+    - No data is stored by AutoForge
 
 ## Contributing
 
