@@ -1,8 +1,8 @@
 {
     "name": "autoforge",
     "displayName": "Autoforge",
-    "description": "AI-powered Git commit message generator inside VS Code",
-    "version": "0.0.1",
+    "description": "Smart Git commit message & branch generator for VS Code with optional AI assistance",
+    "version": "0.0.2",
     "publisher": "akzz",
     "license": "MIT",
     "engines": {
@@ -38,10 +38,10 @@
                 "myExtension.provider": {
                     "type": "string",
                     "enum": [
-                        "groq",
-                        "custom"
+                        "custom",
+                        "groq"
                     ],
-                    "default": "groq",
+                    "default": "custom",
                     "description": "Choose which AI provider to use",
                     "order": 1
                 },
@@ -61,6 +61,10 @@
             {
                 "command": "autoforge.autoCommit",
                 "title": "AutoForge: Auto Commit"
+            },
+            {
+                "command": "autoforge.autoBranchAndCommit",
+                "title": "AutoForge: Auto Branch & Commit"
             },
             {
                 "command": "autoforge.scm.autoCommit",

@@ -1,6 +1,7 @@
 import * as vscode from "vscode";
 import { autoCommit } from "./autoCommit";
 import { autoBranch } from "./autoBranch";
+import { autoBranchAndCommit } from "./autoBranchAndCommit";
 
 /**
  * Integrates AutoForge with VS Code's Source Control view.
@@ -58,11 +59,7 @@ export function registerScmIntegration(context: vscode.ExtensionContext) {
         "autoforge.scm.autoBranchAndCommit",
         async () => {
             try {
-                // First create branch, then commit
-                await autoBranch();
-                // Small delay to ensure branch is created and Git state is updated
-                await new Promise((resolve) => setTimeout(resolve, 500));
-                await autoCommit("scm");
+                await autoBranchAndCommit("scm");
             } catch (error) {
                 vscode.window.showErrorMessage(
                     `Failed to auto commit and branch: ${error instanceof Error ? error.message : String(error)}`,
