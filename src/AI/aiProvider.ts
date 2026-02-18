@@ -32,10 +32,16 @@ export async function callAIProvider({
         }
 
         if (selectedProvider === "groq") {
-            const res = await groqChatCompletion({ prompt, systemPrompt });
+            const res = await groqChatCompletion({
+                prompt: sanitized,
+                systemPrompt,
+            });
             return sanitizeAIOutput(res);
         } else if (selectedProvider === "custom") {
-            const res = await customChatCompletion({ prompt, systemPrompt });
+            const res = await customChatCompletion({
+                prompt: sanitized,
+                systemPrompt,
+            });
             return sanitizeAIOutput(res);
         } else {
             throw new Error("Unsupported AI provider selected.");
