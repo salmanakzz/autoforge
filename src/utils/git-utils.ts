@@ -18,7 +18,7 @@ export async function updateGitInputBox(msg: string): Promise<void> {
     );
 
     if (repository) {
-        repository.inputBox.value = `\`${msg}\``;
+        repository.inputBox.value = msg;
     } else {
         vscode.window.showErrorMessage("No active Git repository found.");
     }
