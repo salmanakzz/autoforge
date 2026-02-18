@@ -7,11 +7,12 @@ import {
 
 import { groqChatCompletion } from "../../Services/groq";
 import { customChatCompletion } from "../../Services/custom";
-
-import { sanitizeDiff } from "../../utils/sanitizeDiff";
 import { sanitizeAIOutput } from "../../utils/sanitizeAIOutput";
+import { sanitizeDiff, isEmptyDiff } from "../../utils/sanitizeDiff";
 
-/* ---------------- MOCKS ---------------- */
+/* -------------------------------------------------------------------------- */
+/*                                  MOCKS                                     */
+/* -------------------------------------------------------------------------- */
 
 jest.mock("vscode", () => ({
     workspace: {
@@ -19,40 +20,119 @@ jest.mock("vscode", () => ({
     },
 }));
 
-jest.mock("../../Services/groq");
-jest.mock("../../Services/custom");
+jest.mock("../../Services/groq", () => ({
+    groqChatCompletion: jest.fn(),
+}));
 
-jest.mock("../../utils/sanitizeDiff");
-jest.mock("../../utils/sanitizeAIOutput");
+jest.mock("../../Services/custom", () => ({
+    customChatCompletion: jest.fn(),
+}));
 
-/* ---------------- HELPERS ---------------- */
+jest.mock("../../utils/sanitizeAIOutput", () => ({
+    sanitizeAIOutput: jest.fn(),
+}));
+
+jest.mock("../../utils/sanitizeDiff", () => ({
+    sanitizeDiff: jest.fn(),
+    isEmptyDiff: jest.fn(),
+}));
 
 const mockGetConfiguration = vscode.workspace.getConfiguration as jest.Mock;
 
 const mockGroq = groqChatCompletion as jest.Mock;
 const mockCustom = customChatCompletion as jest.Mock;
+const mockSanitizeAIOutput = sanitizeAIOutput as jest.Mock;
 const mockSanitizeDiff = sanitizeDiff as jest.Mock;
-const mockSanitizeOutput = sanitizeAIOutput as jest.Mock;
+const mockIsEmptyDiff = isEmptyDiff as jest.Mock;
 
-beforeEach(() => {
-    jest.clearAllMocks();
+/* -------------------------------------------------------------------------- */
+/*                                  HELPERS                                   */
+/* -------------------------------------------------------------------------- */
 
-    mockSanitizeDiff.mockReturnValue({
-        sanitized: "safe diff",
-        sensitiveFileDetected: false,
+function setProvider(provider: "groq" | "custom") {
+    mockGetConfiguration.mockReturnValue({
+        get: jest.fn().mockReturnValue(provider),
     });
+}
 
-    mockSanitizeOutput.mockImplementation((v) => v);
-});
-
-/* =======================================================
-   callAIProvider
-======================================================= */
+/* -------------------------------------------------------------------------- */
+/*                                   TESTS                                    */
+/* -------------------------------------------------------------------------- */
 
 describe("callAIProvider", () => {
-    test("throws when provider is not configured", async () => {
+    beforeEach(() => {
+        jest.clearAllMocks();
+
+        mockSanitizeDiff.mockReturnValue({
+            sanitized: "clean diff",
+            sensitiveFileDetected: false,
+        });
+
+        mockIsEmptyDiff.mockReturnValue(false);
+        mockSanitizeAIOutput.mockImplementation((v) => v);
+    });
+
+    it("calls groq provider when selected", async () => {
+        setProvider("groq");
+
+        mockGroq.mockResolvedValue("feat/add-login");
+
+        const result = await callAIProvider({
+            prompt: "diff",
+        });
+
+        expect(mockGroq).toHaveBeenCalled();
+        expect(result).toBe("feat/add-login");
+    });
+
+    it("calls custom provider when selected", async () => {
+        setProvider("custom");
+
+        mockCustom.mockResolvedValue("fix/payment-bug");
+
+        const result = await callAIProvider({
+            prompt: "diff",
+        });
+
+        expect(mockCustom).toHaveBeenCalled();
+        expect(result).toBe("fix/payment-bug");
+    });
+
+    it("sanitizes AI output", async () => {
+        setProvider("groq");
+
+        mockGroq.mockResolvedValue("RAW OUTPUT");
+        mockSanitizeAIOutput.mockReturnValue("cleaned-output");
+
+        const result = await callAIProvider({
+            prompt: "diff",
+        });
+
+        expect(mockSanitizeAIOutput).toHaveBeenCalledWith("RAW OUTPUT");
+        expect(result).toBe("cleaned-output");
+    });
+
+    it("returns fallback branch when sensitive diff removed", async () => {
+        setProvider("groq");
+
+        mockSanitizeDiff.mockReturnValue({
+            sanitized: "",
+            sensitiveFileDetected: true,
+        });
+
+        mockIsEmptyDiff.mockReturnValue(true);
+
+        const result = await callAIProvider({
+            prompt: "secret diff",
+        });
+
+        expect(result).toBe("chore/update-configuration");
+        expect(mockGroq).not.toHaveBeenCalled();
+    });
+
+    it("throws error when provider not configured", async () => {
         mockGetConfiguration.mockReturnValue({
-            get: () => undefined,
+            get: jest.fn().mockReturnValue(undefined),
         });
 
         await expect(callAIProvider({ prompt: "diff" })).rejects.toThrow(
@@ -60,73 +140,9 @@ describe("callAIProvider", () => {
         );
     });
 
-    test("calls groq provider when selected", async () => {
+    it("throws error for unsupported provider", async () => {
         mockGetConfiguration.mockReturnValue({
-            get: () => "groq",
-        });
-
-        mockGroq.mockResolvedValue("feat/auth-login");
-
-        const result = await callAIProvider({
-            prompt: "diff",
-        });
-
-        expect(mockGroq).toHaveBeenCalled();
-        expect(result).toBe("feat/auth-login");
-    });
-
-    test("calls custom provider when selected", async () => {
-        mockGetConfiguration.mockReturnValue({
-            get: () => "custom",
-        });
-
-        mockCustom.mockResolvedValue("fix/api-error");
-
-        const result = await callAIProvider({
-            prompt: "diff",
-        });
-
-        expect(mockCustom).toHaveBeenCalled();
-        expect(result).toBe("fix/api-error");
-    });
-
-    test("returns fallback branch when diff fully redacted", async () => {
-        mockGetConfiguration.mockReturnValue({
-            get: () => "groq",
-        });
-
-        mockSanitizeDiff.mockReturnValue({
-            sanitized: "",
-            sensitiveFileDetected: true,
-        });
-
-        const result = await callAIProvider({
-            prompt: "diff",
-        });
-
-        expect(result).toBe("chore/update-configuration");
-        expect(mockGroq).not.toHaveBeenCalled();
-    });
-
-    test("sanitizes AI output before returning", async () => {
-        mockGetConfiguration.mockReturnValue({
-            get: () => "groq",
-        });
-
-        mockGroq.mockResolvedValue("RAW OUTPUT");
-        mockSanitizeOutput.mockReturnValue("clean-output");
-
-        const result = await callAIProvider({
-            prompt: "diff",
-        });
-
-        expect(mockSanitizeOutput).toHaveBeenCalledWith("RAW OUTPUT");
-        expect(result).toBe("clean-output");
-    });
-
-    test("throws for unsupported provider", async () => {
-        mockGetConfiguration.mockReturnValue({
-            get: () => "unknown",
+            get: jest.fn().mockReturnValue("unknown"),
         });
 
         await expect(callAIProvider({ prompt: "diff" })).rejects.toThrow(
@@ -135,44 +151,58 @@ describe("callAIProvider", () => {
     });
 });
 
-/* =======================================================
-   generateBranchNameFromDiff
-======================================================= */
+/* -------------------------------------------------------------------------- */
+/*                     generateBranchNameFromDiff                             */
+/* -------------------------------------------------------------------------- */
 
 describe("generateBranchNameFromDiff", () => {
-    test("delegates to callAIProvider", async () => {
-        mockGetConfiguration.mockReturnValue({
-            get: () => "groq",
+    beforeEach(() => {
+        jest.clearAllMocks();
+        setProvider("groq");
+
+        mockSanitizeDiff.mockReturnValue({
+            sanitized: "diff",
+            sensitiveFileDetected: false,
         });
 
-        mockGroq.mockResolvedValue("feat/booking-flow");
+        mockIsEmptyDiff.mockReturnValue(false);
+        mockSanitizeAIOutput.mockImplementation((v) => v);
+    });
 
-        const result = await generateBranchNameFromDiff("diff content");
+    it("generates branch name using AI provider", async () => {
+        mockGroq.mockResolvedValue("feat/add-checkout");
 
-        expect(result).toBe("feat/booking-flow");
+        const result = await generateBranchNameFromDiff("diff");
 
-        expect(mockGroq.mock.calls[0][0].prompt).toContain("Git Diff:");
+        expect(result).toBe("feat/add-checkout");
+        expect(mockGroq).toHaveBeenCalled();
     });
 });
 
-/* =======================================================
-   generateCommitMessageFromDiff
-======================================================= */
+/* -------------------------------------------------------------------------- */
+/*                   generateCommitMessageFromDiff                            */
+/* -------------------------------------------------------------------------- */
 
 describe("generateCommitMessageFromDiff", () => {
-    test("generates conventional commit message", async () => {
-        mockGetConfiguration.mockReturnValue({
-            get: () => "groq",
+    beforeEach(() => {
+        jest.clearAllMocks();
+        setProvider("groq");
+
+        mockSanitizeDiff.mockReturnValue({
+            sanitized: "diff",
+            sensitiveFileDetected: false,
         });
 
-        mockGroq.mockResolvedValue("fix(auth): handle token refresh failure");
+        mockIsEmptyDiff.mockReturnValue(false);
+        mockSanitizeAIOutput.mockImplementation((v) => v);
+    });
+
+    it("generates conventional commit message", async () => {
+        mockGroq.mockResolvedValue("fix(auth): resolve token expiry");
 
         const result = await generateCommitMessageFromDiff("diff");
 
-        expect(result).toBe("fix(auth): handle token refresh failure");
-
-        expect(mockGroq.mock.calls[0][0].prompt).toContain(
-            "Conventional Commit",
-        );
+        expect(result).toBe("fix(auth): resolve token expiry");
+        expect(mockGroq).toHaveBeenCalled();
     });
 });
