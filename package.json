@@ -2,7 +2,7 @@
     "name": "autoforge",
     "displayName": "Autoforge",
     "description": "Smart Git commit message & branch generator for VS Code with optional AI assistance",
-    "version": "0.0.2",
+    "version": "0.0.3",
     "publisher": "akzz",
     "license": "MIT",
     "engines": {
@@ -87,29 +87,34 @@
                 {
                     "command": "autoforge.scm.autoCommit",
                     "when": "scmProvider == git",
-                    "group": "navigation"
+                    "group": "navigation@1"
                 },
                 {
                     "command": "autoforge.scm.autoBranch",
                     "when": "scmProvider == git",
-                    "group": "navigation"
+                    "group": "navigation@2"
                 },
                 {
                     "command": "autoforge.scm.autoBranchAndCommit",
                     "when": "scmProvider == git",
-                    "group": "navigation"
+                    "group": "navigation@3"
                 }
             ],
             "scm/sourceControl": [
                 {
                     "command": "autoforge.scm.autoCommit",
                     "when": "scmProvider == git",
-                    "group": "inline"
+                    "group": "inline@1"
                 },
                 {
                     "command": "autoforge.scm.autoBranch",
                     "when": "scmProvider == git",
-                    "group": "inline"
+                    "group": "inline@2"
+                },
+                {
+                    "command": "autoforge.scm.autoBranchAndCommit",
+                    "when": "scmProvider == git",
+                    "group": "inline@3"
                 }
             ]
         }

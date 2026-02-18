@@ -32,7 +32,13 @@ const groqChatCompletion = async ({
                 },
                 body: JSON.stringify({
                     model: model,
+                    temperature: 0,
                     messages: [
+                        {
+                            role: "system",
+                            content:
+                                "You generate git metadata similar to GitHub Copilot and must be precise and deterministic.",
+                        },
                         {
                             role: "user",
                             content: systemPrompt
@@ -41,7 +47,7 @@ const groqChatCompletion = async ({
                         },
                     ],
                 }),
-            }
+            },
         );
 
         const json = await res.json();

@@ -22,6 +22,19 @@ Seamlessly integrated with VS Code's Source Control view, similar to GitHub Copi
 - **Auto Branch**: Create a new branch with an AI-generated name
 - **Auto Branch & Commit**: Create a branch and commit in one action
 
+## 🆕 What's New
+
+### v[x.x.x] — Branch & Commit Engine Overhaul (Custom)
+
+- **Smarter commit messages** — descriptions are now fluent and semantic, built from code intent rather than keyword matching
+    - Before: `feat(src/cart): add ui components, add add-to-cart function`
+    - After: `feat(cart): implement addToCart and calculateTotal, and create ProductPage component`
+- **Dedicated branch name engine** — branch names are generated from their own pipeline, no longer derived from the commit message
+    - Before: `feat/cart-create-productpage-and-im` _(truncated, broken)_
+    - After: `feat/cart-add-to-cart-calculate-total` _(clean, readable)_
+- **Semantic scope detection** — scope is inferred from domain context (`src/cart/...` → `cart`, `src/auth/...` → `auth`) instead of raw folder paths
+- **Accurate commit types** — type is inferred from code intent, not surface keywords (a bug fix inside a function named `createUser` correctly produces `fix`, not `feat`)
+
 ## 🚀 Usage
 
 ## 🧭 Command Palette
@@ -182,6 +195,36 @@ Initial release of AutoForge with the following features:
 
 ---
 
+## 🔒 Privacy & Security
+
+### Diff Sanitization
+
+Before sending any data to external AI providers, AutoForge automatically sanitizes
+your staged diff to protect sensitive information.
+
+**What gets removed before sending:**
+
+- `.env` files and variants (`.env.local`, `.env.production`, etc.)
+- Private key files (`.pem`, `.key`, `id_rsa`, `id_ed25519`, etc.)
+- Credential and secret files (`*secret*`, `*credential*`, `*password*`, `.npmrc`, `.netrc`)
+- Lines containing sensitive values like `API_KEY=`, `SECRET=`, `PASSWORD=`, bearer tokens, AWS keys
+
+**What this means for you:**
+
+- Sensitive files are never forwarded to any AI provider
+- Only sanitized diff content leaves your machine
+- If your entire staged diff consists of sensitive files, AutoForge will return a
+  safe fallback message without making any external request
+
+> ⚠️ **Heads up:** If your staged changes are mostly credential or config file updates,
+> the AI-generated message may be generic (e.g., `chore(config): update sensitive configuration`)
+> because those file contents are intentionally excluded from analysis.
+> This is expected behavior — your secrets stay on your machine.
+
+For full privacy with no external requests at all, switch to the `custom` provider in settings.
+
+---
+
 ## Privacy
 
 AutoForge respects your workflow and privacy preferences.
@@ -193,6 +236,8 @@ AutoForge respects your workflow and privacy preferences.
 
 - When using **AI providers (e.g., `groq`)**:
     - Staged git diff data is sent to the configured AI service to generate commit messages
+    - Sensitive files and credential values are **automatically stripped** before sending
+    - See [Privacy & Security](#-privacy--security) for full details on what is sanitized
     - No data is stored by AutoForge
 
 ## Contributing

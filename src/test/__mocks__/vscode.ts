@@ -14,3 +14,13 @@ export const workspace = {
     workspaceFolders: [{ uri: { fsPath: "/mock/project" } }],
     getWorkspaceFolder: jest.fn(() => ({ uri: { fsPath: "/mock/project" } })),
 };
+
+export class Range {
+    start: any;
+    end: any;
+
+    constructor(start: any, end: any) {
+        this.start = start;
+        this.end = end;
+    }
+}
