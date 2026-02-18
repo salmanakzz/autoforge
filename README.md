@@ -24,7 +24,7 @@ Seamlessly integrated with VS Code's Source Control view, similar to GitHub Copi
 
 ## 🆕 What's New
 
-### v[x.x.x] — Branch & Commit Engine Overhaul (Custom)
+### v0.0.4 — Branch & Commit Engine Overhaul (Custom)
 
 - **Smarter commit messages** — descriptions are now fluent and semantic, built from code intent rather than keyword matching
     - Before: `feat(src/cart): add ui components, add add-to-cart function`
