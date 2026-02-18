@@ -2,7 +2,7 @@
     "name": "autoforge",
     "displayName": "Autoforge",
     "description": "Smart Git commit message & branch generator for VS Code with optional AI assistance",
-    "version": "0.0.3",
+    "version": "0.0.4",
     "publisher": "akzz",
     "license": "MIT",
     "engines": {
