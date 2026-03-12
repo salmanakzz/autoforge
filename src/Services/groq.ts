@@ -15,7 +15,7 @@ const groqChatCompletion = async ({
 }: GroqCompletionOptions): Promise<string> => {
     try {
         const groqApiKey = vscode.workspace
-            .getConfiguration("myExtension")
+            .getConfiguration("autoforge")
             .get("apiKey");
 
         if (!groqApiKey) {

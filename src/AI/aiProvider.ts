@@ -15,7 +15,7 @@ export async function callAIProvider({
 }: AIProviderOptions): Promise<string> {
     try {
         const selectedProvider = vscode.workspace
-            .getConfiguration("myExtension")
+            .getConfiguration("autoforge")
             .get("provider");
 
         if (!selectedProvider) {
