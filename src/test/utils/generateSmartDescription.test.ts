@@ -119,7 +119,7 @@ diff --git a/user.service.test.ts b/user.service.test.ts
             expect(result).toContain("remove debug logging");
         });
 
-        it("falls back when no semantic signal found", () => {
+        it("detect variable changes", () => {
             const diff = `
 + const a = 1;
 - const b = 2;
@@ -129,7 +129,7 @@ diff --git a/user.service.test.ts b/user.service.test.ts
             const signals = analyzeSignals(ctx);
 
             const result = generateSmartDescription(ctx, signals);
-            expect(result).toBe("update logic");
+            expect(result).toBe("refactor a");
         });
 
         it("handles empty diff safely", () => {
