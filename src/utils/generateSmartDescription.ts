@@ -10,8 +10,13 @@
  *   "add authentication middleware and input validation to user routes"
  */
 
-import { ChangeVerb, DiffContext, Signal, SignalDetector, SignalKind } from "./types";
-
+import {
+    ChangeVerb,
+    DiffContext,
+    Signal,
+    SignalDetector,
+    SignalKind,
+} from "./types";
 
 /**
  * A signal is a atomic piece of evidence extracted from the diff.
@@ -682,14 +687,10 @@ export function analyzeSignals(ctx: DiffContext): Signal[] {
         .slice(0, 4);
 }
 
-export function generateSmartDescription(diff: string): string {
-    if (!diff?.trim()) {
-        return "no changes detected";
-    }
-
-    const ctx = parseDiffContext(diff);
-    const topSignals = analyzeSignals(ctx);
-
+export function generateSmartDescription(
+    ctx: DiffContext,
+    topSignals: Signal[],
+): string {
     const description = synthesize(topSignals);
     return description || fallbackDescription(ctx);
 }
