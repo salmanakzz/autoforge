@@ -35,7 +35,7 @@
         "configuration": {
             "type": "object",
             "properties": {
-                "myExtension.provider": {
+                "autoforge.provider": {
                     "type": "string",
                     "enum": [
                         "custom",
@@ -45,7 +45,7 @@
                     "description": "Choose which AI provider to use",
                     "order": 1
                 },
-                "myExtension.apiKey": {
+                "autoforge.apiKey": {
                     "type": "string",
                     "default": "",
                     "description": "API Key for the selected provider",

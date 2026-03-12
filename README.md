@@ -24,6 +24,8 @@ Seamlessly integrated with VS Code's Source Control view, similar to GitHub Copi
 
 ## 🆕 What's New
 
+### v0.0.5 — The latest version contains bug fixes and performance improvements.
+
 ### v0.0.4 — Branch & Commit Engine Overhaul (Custom)
 
 - **Smarter commit messages** — descriptions are now fluent and semantic, built from code intent rather than keyword matching
@@ -147,12 +149,12 @@ This mode is recommended if you want:
 
 This extension contributes the following settings:
 
-- `myExtension.provider`
+- `autoforge.provider`
     - Choose which generation provider to use
     - Options: `custom`, `groq`
     - Default: `custom`
 
-- `myExtension.apiKey`
+- `autoforge.apiKey`
     - API key for AI providers (required only when using `groq`)
     - Default: `""`
 
@@ -173,8 +175,8 @@ This extension contributes the following settings:
 1. Open VS Code Settings (`Ctrl+,` / `Cmd+,`)
 2. Search for "AutoForge" or navigate to the extension settings
 3. Configure your AI provider and API key:
-    - Set `myExtension.provider` to your preferred provider (`custom` or `groq`)
-    - Set `myExtension.apiKey` to your API key
+    - Set `autoforge.provider` to your preferred provider (`custom` or `groq`)
+    - Set `autoforge.apiKey` to your API key
 
 ## Known Issues
 

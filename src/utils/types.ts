@@ -16,7 +16,8 @@ export type SignalKind =
     | "logging"
     | "performance"
     | "type"
-    | "generic";
+    | "generic"
+    | "logic";
 
 export type ChangeVerb =
     | "implement"

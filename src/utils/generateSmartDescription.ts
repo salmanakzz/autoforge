@@ -543,6 +543,103 @@ const detectPerformance: SignalDetector = (ctx) => {
     ];
 };
 
+/**
+ * Detects string literal replacements — catches renames like
+ * "myExtension" → "autoforge" inside method calls, config keys, etc.
+ */
+const detectStringRenames: SignalDetector = (ctx) => {
+    const removedStrings = allMatches(
+        /^-.*?["'`]([A-Za-z][A-Za-z0-9._-]{2,})["'`]/gm,
+        ctx.raw,
+    );
+    const addedStrings = allMatches(
+        /^\+.*?["'`]([A-Za-z][A-Za-z0-9._-]{2,})["'`]/gm,
+        ctx.raw,
+    );
+
+    const removedSet = new Set(removedStrings);
+    const addedSet = new Set(addedStrings);
+
+    // Strings that are new (not just carried over unchanged)
+    const renamed = addedStrings.filter((s) => !removedSet.has(s));
+    const dropped = removedStrings.filter((s) => !addedSet.has(s));
+
+    // Must be a swap (something removed AND something added) to be a rename
+    if (renamed.length === 0 || dropped.length === 0) {
+        return [];
+    }
+
+    // Filter noise — skip generic words like "true", "get", "src"
+    const NOISE = new Set([
+        "true",
+        "false",
+        "null",
+        "undefined",
+        "src",
+        "get",
+        "set",
+        "use",
+        "new",
+        "the",
+        "default",
+    ]);
+    const meaningfulAdded = renamed.filter((s) => !NOISE.has(s.toLowerCase()));
+    const meaningfulDropped = dropped.filter(
+        (s) => !NOISE.has(s.toLowerCase()),
+    );
+    // ──────────────────────────────────────────────────────────────────────
+
+    if (meaningfulAdded.length === 0) {
+        return [];
+    }
+
+    const subjects =
+        meaningfulDropped.length === 1 && meaningfulAdded.length === 1
+            ? [
+                  `configuration section from ${meaningfulDropped[0]} to ${meaningfulAdded[0]}`,
+              ]
+            : meaningfulAdded.slice(0, 2);
+
+    return [
+        {
+            kind: "config",
+            verb: "update",
+            subjects,
+            score: 7,
+        },
+    ];
+};
+
+const detectVariableRenames: SignalDetector = (ctx) => {
+    const removedVars = allMatches(
+        /^-\s*(?:const|let|var)\s+([A-Za-z_$][A-Za-z0-9_$]*)\s*=/gm,
+        ctx.raw,
+    );
+    const addedVars = allMatches(
+        /^\+\s*(?:const|let|var)\s+([A-Za-z_$][A-Za-z0-9_$]*)\s*=/gm,
+        ctx.raw,
+    );
+
+    const removedSet = new Set(removedVars);
+    const addedSet = new Set(addedVars);
+
+    const renamed = addedVars.filter((n) => !removedSet.has(n));
+    const dropped = removedVars.filter((n) => !addedSet.has(n));
+
+    if (renamed.length === 0 || dropped.length === 0) {
+        return [];
+    }
+
+    return [
+        {
+            kind: "logic",
+            verb: "refactor",
+            subjects: renamed,
+            score: 7,
+        },
+    ];
+};
+
 // ─── Detector Pipeline ────────────────────────────────────────────────────────
 
 /** Ordered from most specific → least specific. */
@@ -562,6 +659,8 @@ const DETECTORS: SignalDetector[] = [
     detectConfig,
     detectLogging,
     detectPerformance,
+    detectStringRenames,
+    detectVariableRenames,
 ];
 
 // ─── Synthesis Engine ─────────────────────────────────────────────────────────
@@ -576,14 +675,13 @@ function synthesize(signals: Signal[]): string {
         return "";
     }
 
-    // Deduplicate subjects within the same kind (components can't also be functions)
     const claimedSubjects = new Set<string>();
     const deduped: Signal[] = [];
 
     for (const sig of signals) {
-        const freshSubjects = sig.subjects.filter(
-            (s) => !claimedSubjects.has(s),
-        );
+        const freshSubjects = sig.subjects
+            .filter((s) => !claimedSubjects.has(s))
+            .slice(0, 3); // ← cap subjects per signal
         if (freshSubjects.length === 0) {
             continue;
         }
@@ -591,23 +689,20 @@ function synthesize(signals: Signal[]): string {
         deduped.push({ ...sig, subjects: freshSubjects });
     }
 
-    // Merge signals with the same verb into groups
+    // max 2 verb groups in output
     const verbGroups = new Map<ChangeVerb, string[]>();
-    for (const sig of deduped) {
+    for (const sig of deduped.slice(0, 2)) {
         if (!verbGroups.has(sig.verb)) {
             verbGroups.set(sig.verb, []);
         }
         verbGroups.get(sig.verb)!.push(...sig.subjects.map(readable));
     }
 
-    // Render each verb group as a clause: "implement addToCart and calculateTotal"
     const clauses: string[] = [];
     for (const [verb, subjects] of verbGroups) {
-        const subjectPhrase = joinWithAnd(subjects);
-        clauses.push(`${verb} ${subjectPhrase}`);
+        clauses.push(`${verb} ${joinWithAnd(subjects)}`);
     }
 
-    // Join clauses: "implement X and Y, and create Z"
     return joinClauses(clauses);
 }
 
@@ -672,19 +767,65 @@ function fallbackDescription(ctx: DiffContext): string {
 export function analyzeSignals(ctx: DiffContext): Signal[] {
     const rawSignals: Signal[] = DETECTORS.flatMap((detect) => detect(ctx));
 
-    // Keep highest-scoring signal per kind
-    const bestByKind = new Map<SignalKind, Signal>();
+    const bestByKindVerb = new Map<string, Signal>();
     for (const signal of rawSignals) {
-        const existing = bestByKind.get(signal.kind);
-        if (!existing || signal.score > existing.score) {
-            bestByKind.set(signal.kind, signal);
+        const key = `${signal.kind}:${signal.verb}`;
+        const existing = bestByKindVerb.get(key);
+        if (!existing) {
+            bestByKindVerb.set(key, { ...signal });
+        } else {
+            bestByKindVerb.set(key, {
+                ...existing,
+                score: Math.max(existing.score, signal.score),
+                subjects: [
+                    ...new Set([...existing.subjects, ...signal.subjects]),
+                ],
+            });
         }
     }
 
-    // Return sorted by score descending, capped at 4
-    return [...bestByKind.values()]
+    const claimedSubjects = new Set<string>();
+    const merged = [...bestByKindVerb.values()]
         .sort((a, b) => b.score - a.score)
-        .slice(0, 4);
+        .map((signal) => {
+            const freshSubjects = signal.subjects.filter(
+                (s) => !claimedSubjects.has(s),
+            );
+            freshSubjects.forEach((s) => claimedSubjects.add(s));
+            return { ...signal, subjects: freshSubjects };
+        })
+        .filter((signal) => signal.subjects.length > 0);
+
+    // ── NEW: pick only the signals that matter ─────────────────────────────
+    return pickTopSignals(merged);
+}
+
+/**
+ * Picks the most meaningful signals for the commit message.
+ *
+ * Rules:
+ *   1. Always include the highest-scoring signal (primary change)
+ *   2. Include a second signal only if its score is ≥70% of the top score
+ *      (meaningful secondary change, not just noise)
+ *   3. Never include more than 2 signals — commit msgs should be scannable
+ *   4. Cap subjects per signal to 3 — "implement a, b, and c" not "a, b, c, d, e"
+ */
+function pickTopSignals(signals: Signal[]): Signal[] {
+    if (signals.length === 0) {
+        return [];
+    }
+
+    const topScore = signals[0].score;
+
+    const picked = signals
+        .filter((s, i) => i === 0 || s.score >= topScore * 0.7)
+        .slice(0, 2) // hard cap at 2 signals
+        .map((s) => ({
+            ...s,
+            subjects: s.subjects.slice(0, 3), // hard cap at 3 subjects
+        }));
+
+    return picked;
 }
 
 export function generateSmartDescription(
