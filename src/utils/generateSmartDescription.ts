@@ -455,9 +455,10 @@ const detectDependencies: SignalDetector = (ctx) => {
                 kind: "dependency",
                 subjects: ["dependencies"],
                 verb: "update",
-                score: 9,
+                score: 6,
             },
         ];
+        //                                                                                ↑ was 9
     }
     if (netAdded(versionPattern, ctx)) {
         return [
@@ -468,6 +469,7 @@ const detectDependencies: SignalDetector = (ctx) => {
                 score: 9,
             },
         ];
+        // new dep addition stays high ↑
     }
     if (netRemoved(versionPattern, ctx)) {
         return [
@@ -475,7 +477,7 @@ const detectDependencies: SignalDetector = (ctx) => {
                 kind: "dependency",
                 subjects: ["dependencies"],
                 verb: "remove",
-                score: 9,
+                score: 6,
             },
         ];
     }
@@ -560,16 +562,17 @@ const detectStringRenames: SignalDetector = (ctx) => {
     const removedSet = new Set(removedStrings);
     const addedSet = new Set(addedStrings);
 
-    // Strings that are new (not just carried over unchanged)
-    const renamed = addedStrings.filter((s) => !removedSet.has(s));
-    const dropped = removedStrings.filter((s) => !addedSet.has(s));
+    const renamed = [...new Set(addedStrings)].filter(
+        (s) => !removedSet.has(s),
+    ); // ← dedup
+    const dropped = [...new Set(removedStrings)].filter(
+        (s) => !addedSet.has(s),
+    ); // ← dedup
 
-    // Must be a swap (something removed AND something added) to be a rename
     if (renamed.length === 0 || dropped.length === 0) {
         return [];
     }
 
-    // Filter noise — skip generic words like "true", "get", "src"
     const NOISE = new Set([
         "true",
         "false",
@@ -583,11 +586,11 @@ const detectStringRenames: SignalDetector = (ctx) => {
         "the",
         "default",
     ]);
+
     const meaningfulAdded = renamed.filter((s) => !NOISE.has(s.toLowerCase()));
     const meaningfulDropped = dropped.filter(
         (s) => !NOISE.has(s.toLowerCase()),
     );
-    // ──────────────────────────────────────────────────────────────────────
 
     if (meaningfulAdded.length === 0) {
         return [];
@@ -600,14 +603,7 @@ const detectStringRenames: SignalDetector = (ctx) => {
               ]
             : meaningfulAdded.slice(0, 2);
 
-    return [
-        {
-            kind: "config",
-            verb: "update",
-            subjects,
-            score: 7,
-        },
-    ];
+    return [{ kind: "config", verb: "update", subjects, score: 7 }];
 };
 
 const detectVariableRenames: SignalDetector = (ctx) => {
@@ -731,9 +727,43 @@ function joinClauses(clauses: string[]): string {
 // ─── Fallback ─────────────────────────────────────────────────────────────────
 
 function fallbackDescription(ctx: DiffContext): string {
-    const { addedLines, removedLines, lineDelta } = ctx;
+    const { addedLines, removedLines, lineDelta, fileNames, addedContent } =
+        ctx;
+
+    // 1. Extract real identifier from added lines
+    const nameMatch =
+        /(?:function|class|const|let|var)\s+([A-Za-z][A-Za-z0-9_]+)/.exec(
+            addedContent,
+        );
+    if (nameMatch) {
+        const action = removedLines.length > 0 ? "refactor" : "add";
+        return `${action} ${nameMatch[1]}`;
+    }
+
+    // 2. Use filename already parsed by parseDiffContext
+    const file = fileNames[0];
+    if (file) {
+        const withoutExt = file.replace(/\.[^.]+$/, "");
+        const name = withoutExt.split("/").pop() ?? "";
+
+        // index.ts → use parent folder instead
+        if (!name || name === "index") {
+            const parent = withoutExt.split("/").at(-2);
+            if (parent) {
+                return removedLines.length > 0
+                    ? `refactor ${parent}`
+                    : `update ${parent}`;
+            }
+        }
+
+        return removedLines.length > 0 ? `refactor ${name}` : `update ${name}`;
+    }
+
+    // 3. Last resort
     if (addedLines.length > 0 && removedLines.length > 0) {
-        return lineDelta > 20 ? "refactor existing logic" : "update logic";
+        return lineDelta > 20
+            ? "refactor implementation"
+            : "update implementation";
     }
     if (addedLines.length > 0) {
         return "add new functionality";
@@ -743,7 +773,6 @@ function fallbackDescription(ctx: DiffContext): string {
     }
     return "modify files";
 }
-
 // ─── Public API ───────────────────────────────────────────────────────────────
 
 /**
