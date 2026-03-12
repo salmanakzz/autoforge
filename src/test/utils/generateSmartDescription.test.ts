@@ -13,7 +13,10 @@ describe("Git Diff Summarization Engine", () => {
 + }
 `;
 
-            const result = generateSmartDescription(diff);
+            const ctx = parseDiffContext(diff);
+            const signals = analyzeSignals(ctx);
+
+            const result = generateSmartDescription(ctx, signals);
 
             expect(result).toContain("implement addToCart");
         });
@@ -25,8 +28,10 @@ describe("Git Diff Summarization Engine", () => {
 + }
 `;
 
-            const result = generateSmartDescription(diff);
+            const ctx = parseDiffContext(diff);
+            const signals = analyzeSignals(ctx);
 
+            const result = generateSmartDescription(ctx, signals);
             expect(result).toContain("create ProductPage");
         });
 
@@ -36,8 +41,10 @@ describe("Git Diff Summarization Engine", () => {
 + const token = jwt.sign(payload, SECRET);
 `;
 
-            const result = generateSmartDescription(diff);
+            const ctx = parseDiffContext(diff);
+            const signals = analyzeSignals(ctx);
 
+            const result = generateSmartDescription(ctx, signals);
             expect(result).toContain("authentication");
         });
 
@@ -48,8 +55,10 @@ describe("Git Diff Summarization Engine", () => {
 + handle(res);
 `;
 
-            const result = generateSmartDescription(diff);
+            const ctx = parseDiffContext(diff);
+            const signals = analyzeSignals(ctx);
 
+            const result = generateSmartDescription(ctx, signals);
             expect(result).toContain("async/await");
         });
 
@@ -60,8 +69,10 @@ describe("Git Diff Summarization Engine", () => {
 + });
 `;
 
-            const result = generateSmartDescription(diff);
+            const ctx = parseDiffContext(diff);
+            const signals = analyzeSignals(ctx);
 
+            const result = generateSmartDescription(ctx, signals);
             expect(result).toContain("database");
         });
 
@@ -72,8 +83,10 @@ diff --git a/package.json b/package.json
 - "zod": "^3.21.0"
 `;
 
-            const result = generateSmartDescription(diff);
+            const ctx = parseDiffContext(diff);
+            const signals = analyzeSignals(ctx);
 
+            const result = generateSmartDescription(ctx, signals);
             expect(result).toContain("dependencies");
         });
 
@@ -87,8 +100,10 @@ diff --git a/user.service.test.ts b/user.service.test.ts
 + });
 `;
 
-            const result = generateSmartDescription(diff);
+            const ctx = parseDiffContext(diff);
+            const signals = analyzeSignals(ctx);
 
+            const result = generateSmartDescription(ctx, signals);
             expect(result).toContain("unit tests");
         });
 
@@ -97,8 +112,10 @@ diff --git a/user.service.test.ts b/user.service.test.ts
 - console.log("debug info");
 `;
 
-            const result = generateSmartDescription(diff);
+            const ctx = parseDiffContext(diff);
+            const signals = analyzeSignals(ctx);
 
+            const result = generateSmartDescription(ctx, signals);
             expect(result).toContain("remove debug logging");
         });
 
@@ -108,15 +125,20 @@ diff --git a/user.service.test.ts b/user.service.test.ts
 - const b = 2;
 `;
 
-            const result = generateSmartDescription(diff);
+            const ctx = parseDiffContext(diff);
+            const signals = analyzeSignals(ctx);
 
+            const result = generateSmartDescription(ctx, signals);
             expect(result).toBe("update logic");
         });
 
         it("handles empty diff safely", () => {
-            const result = generateSmartDescription("");
+            const result = generateSmartDescription(
+                { addedLines: [], removedLines: [] } as any,
+                [],
+            );
 
-            expect(result).toBe("no changes detected");
+            expect(result).toBe("modify files");
         });
     });
 

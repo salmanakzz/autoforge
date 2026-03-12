@@ -33,13 +33,19 @@ type ConventionalType =
  * Supports both labeled ("Diff: ...") and bare diff formats.
  */
 function extractDiff(prompt: string): string {
-    // Labeled format: "Diff: <content>"
     const labeled = /Diff:\s*([\s\S]*)$/i.exec(prompt);
     if (labeled) {
         return labeled[1].trim();
     }
 
-    // Bare diff format — starts with "diff --git" or "---"
+    // Check if the entire prompt IS the diff
+    if (
+        prompt.trimStart().startsWith("diff --git") ||
+        prompt.trimStart().startsWith("---")
+    ) {
+        return prompt.trim();
+    }
+
     const bare = /^(diff --git[\s\S]*|---\s+a\/[\s\S]*)$/m.exec(prompt);
     if (bare) {
         return bare[1].trim();
@@ -130,17 +136,18 @@ const TYPE_RULES: Array<{
  */
 function inferCommitType(signals: Signal[]): ConventionalType {
     let bestType: ConventionalType = "chore";
-    let bestPriority = -1;
+    let bestScore = -1;
 
     for (const signal of signals) {
         for (const rule of TYPE_RULES) {
-            if (rule.test(signal) && rule.priority > bestPriority) {
+            // Combine rule priority with signal confidence score
+            const combined = rule.priority * (signal.score ?? 1);
+            if (rule.test(signal) && combined > bestScore) {
                 bestType = rule.type;
-                bestPriority = rule.priority;
+                bestScore = combined;
             }
         }
     }
-
     return bestType;
 }
 
@@ -185,7 +192,10 @@ function inferScope(files: string[], signals: Signal[]): string {
     const fullPaths = files.join("/").toLowerCase();
 
     for (const { pattern, scope } of DOMAIN_MAP) {
-        if (pattern.test(fullPaths)) {
+        if (
+            pattern.test(fullPaths) ||
+            allSegments.some((s) => pattern.test(s))
+        ) {
             return scope;
         }
     }
@@ -261,7 +271,7 @@ export async function customChatCompletion({
     // ── 3. Derive all three components from signals ────────────────────────────
     const type = inferCommitType(signals);
     const scope = inferScope(ctx.fileNames, signals);
-    const description = generateSmartDescription(diff); // uses same ctx internally
+    const description = generateSmartDescription(ctx, signals); // uses same ctx internally
 
     // ── 4. Detect output mode ──────────────────────────────────────────────────
     const mode = detectOutputMode(prompt);

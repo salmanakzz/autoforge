@@ -47,7 +47,7 @@ export async function callAIProvider({
             throw new Error("Unsupported AI provider selected.");
         }
     } catch (error) {
-        console.error("Failed to call AI provider: " + error);
+        console.error("Failed to call AI provider,: " + error);
         throw error;
     }
 }
