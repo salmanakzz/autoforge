@@ -163,44 +163,47 @@ function inferCommitType(signals: Signal[]): ConventionalType {
  *   4. "core" as last resort
  */
 function inferScope(files: string[], signals: Signal[]): string {
-    // 1. Semantic domain mapping from path segments
     const DOMAIN_MAP: Array<{ pattern: RegExp; scope: string }> = [
-        { pattern: /auth|login|session|oauth|passport/i, scope: "auth" },
-        { pattern: /cart|basket|checkout|order/i, scope: "cart" },
-        { pattern: /user|account|profile|member/i, scope: "user" },
-        { pattern: /product|catalog|inventory|item/i, scope: "product" },
-        { pattern: /payment|billing|invoice|stripe/i, scope: "payment" },
-        { pattern: /api|route|controller|endpoint|handler/i, scope: "api" },
-        { pattern: /db|database|migration|schema|model|entity/i, scope: "db" },
-        { pattern: /config|setting|env|environment/i, scope: "config" },
-        { pattern: /test|spec|__tests__|__mocks__/i, scope: "test" },
-        { pattern: /ui|component|page|view|screen|layout/i, scope: "ui" },
-        { pattern: /store|redux|zustand|context|state/i, scope: "store" },
-        { pattern: /hook|use[A-Z]/, scope: "hooks" },
-        { pattern: /util|helper|lib|common|shared/i, scope: "utils" },
-        { pattern: /middleware/i, scope: "middleware" },
-        { pattern: /notification|email|sms|push/i, scope: "notify" },
-        { pattern: /search|filter|sort/i, scope: "search" },
-        { pattern: /upload|file|storage|s3/i, scope: "storage" },
+        { pattern: /\b(auth|login|session|oauth|passport)\b/i, scope: "auth" },
+        { pattern: /\b(cart|basket|checkout)\b/i, scope: "cart" },
+        { pattern: /\b(order)\b/i, scope: "orders" },
+        { pattern: /\b(user|account|profile|member)\b/i, scope: "user" },
+        { pattern: /\b(product|catalog|inventory)\b/i, scope: "product" },
+        { pattern: /\b(payment|billing|invoice|stripe)\b/i, scope: "payment" },
+        { pattern: /\b(controller|endpoint|handler)\b/i, scope: "api" },
+        { pattern: /\b(migration|schema|entity)\b/i, scope: "db" },
+        { pattern: /\b(config|setting|env|environment)\b/i, scope: "config" },
+        { pattern: /\b(test|spec)\b/i, scope: "test" },
+        { pattern: /\b(component|page|view|screen|layout)\b/i, scope: "ui" },
+        { pattern: /\b(store|redux|zustand|context)\b/i, scope: "store" },
+        { pattern: /\b(util|helper|lib|common|shared)\b/i, scope: "utils" },
+        { pattern: /\b(middleware)\b/i, scope: "middleware" },
+        { pattern: /\b(notification|email|sms|push)\b/i, scope: "notify" },
+        { pattern: /\b(search|filter|sort)\b/i, scope: "search" },
+        { pattern: /\b(upload|storage|s3)\b/i, scope: "storage" },
+        { pattern: /\b(validator|validation)\b/i, scope: "validation" },
     ];
 
-    const allSegments = files
-        .flatMap((f) => f.split("/"))
-        .map((s) => s.toLowerCase())
-        .filter(Boolean);
-
-    const fullPaths = files.join("/").toLowerCase();
-
-    for (const { pattern, scope } of DOMAIN_MAP) {
-        if (
-            pattern.test(fullPaths) ||
-            allSegments.some((s) => pattern.test(s))
-        ) {
-            return scope;
+    // Score each scope by how many files match it
+    const scopeHits: Record<string, number> = {};
+    for (const file of files) {
+        const filePath = file.toLowerCase();
+        for (const { pattern, scope } of DOMAIN_MAP) {
+            if (pattern.test(filePath)) {
+                scopeHits[scope] = (scopeHits[scope] ?? 0) + 1;
+                break; // one scope per file
+            }
         }
     }
 
-    // 2. First meaningful directory (skip noise segments)
+    // Pick the most frequent scope
+    const topScope = Object.entries(scopeHits).sort((a, b) => b[1] - a[1])[0];
+
+    if (topScope) {
+        return topScope[0];
+    }
+
+    // Fallback: first meaningful directory across all files
     const NOISE_DIRS = new Set([
         "src",
         "lib",
@@ -212,26 +215,30 @@ function inferScope(files: string[], signals: Signal[]): string {
         "modules",
     ]);
 
+    const dirFrequency: Record<string, number> = {};
+    for (const file of files) {
+        const parts = file.split("/").slice(0, -1); // dirs only, no filename
+        for (const part of parts) {
+            if (!NOISE_DIRS.has(part.toLowerCase())) {
+                dirFrequency[part] = (dirFrequency[part] ?? 0) + 1;
+            }
+        }
+    }
+
+    const topDir = Object.entries(dirFrequency).sort((a, b) => b[1] - a[1])[0];
+
+    if (topDir) {
+        return topDir[0].toLowerCase();
+    }
+
+    // Filename fallback
     const primaryFile = files[0] ?? "";
-    const dirParts = path.dirname(primaryFile).split("/").filter(Boolean);
-    const meaningfulDir = dirParts.find(
-        (d) => !NOISE_DIRS.has(d.toLowerCase()),
-    );
-
-    if (meaningfulDir) {
-        return meaningfulDir.toLowerCase();
-    }
-
-    // 3. Filename without extension
-    const baseName = path
-        .basename(primaryFile, path.extname(primaryFile))
-        .toLowerCase();
-    if (baseName && baseName !== "index") {
-        return baseName;
-    }
-
-    // 4. Last resort
-    return "core";
+    const baseName =
+        primaryFile
+            .split("/")
+            .pop()
+            ?.replace(/\.[^.]+$/, "") ?? "";
+    return baseName && baseName !== "index" ? baseName : "core";
 }
 
 // ─── Main Function ────────────────────────────────────────────────────────────

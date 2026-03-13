@@ -24,7 +24,7 @@ Seamlessly integrated with VS Code's Source Control view, similar to GitHub Copi
 
 ## 🆕 What's New
 
-### v0.0.6 — The latest version contains bug fixes and performance improvements.
+### v0.0.7 — The latest version contains bug fixes and performance improvements.
 
 ### v0.0.4 — Branch & Commit Engine Overhaul (Custom)
 
